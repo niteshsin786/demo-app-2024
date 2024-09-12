@@ -14,11 +14,16 @@ Task explain and checklist
     ==> i did not understand this requirement, what do you mean by "archeticture" here?
 
 - Create helmchart for the stack
-    ==> created a base chart under /chart folder which both apps are using. check /app-deployments where app-specific values vailes exist which can be overridden per app based
+    ==> created a base chart under /chart folder which both apps are using. check /app-deployments where app-specific values exist which can be overridden per app based
+
 
 - Deployment via Ansible
     ==> this is done under /ansible-deployer, for demo pourpose, i am using "helm template" which can be repalced with "helm upgrade --install"  for deployment.
         since one app is using the env var and othere does not, i have made a 2 separate task.
+    ==> to trigger deployment below command can be used
+       to deploy data-api app {ansible-playbook ansible-playbook.yaml -e app=dataAPI}
+       to deploy backend-api app in prod env {ansible-playbook ansible-playbook.yaml -e app=backendAPI -e env=prod}
+       to deploy backend-api app in non-prod env {ansible-playbook ansible-playbook.yaml -e app=backendAPI -e env=non-prod}
 
 - Monitoring Kubernetes Applications - Demonstrate how to monitor the node and Pod and containers resource utilization
     ==> kubectl top nodes (for node)

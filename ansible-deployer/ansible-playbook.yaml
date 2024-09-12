@@ -1,0 +1,38 @@
+---
+- name: Deploy apps using Helm template
+  hosts: localhost
+
+  tasks:
+
+    # for backend-api: use env-specific variables
+    - name: include environment-specific variables for backend-api if env is provided
+      when: app == "backendAPI" and env is defined
+      include_vars: "{{ env }}-vars.yaml"
+
+    - name: deploy backend-api using Helm with environment-specific variables
+      when: app == "backendAPI"
+      command: >
+        helm template backend-api ../charts/demo-base-chart
+        {% if env is defined %}
+        --set externalIntegrationKey={{ externalIntegrationKey }}
+        {% endif %}
+        -f ../app-deployments/backend-api-values.yaml
+      register: backend_api_output
+
+    - name: show helm template output for backend-api
+      when: app == "backendAPI"
+      debug:
+        msg: "{{ backend_api_output.stdout }}"
+
+    # for data-api: no env variables required
+    - name: deploy data-api using Helm (no env variables needed)
+      when: app == "dataAPI"
+      command: >
+        helm template data-api ../charts/demo-base-chart
+        -f ../app-deployments/data-api-values.yaml
+      register: data_api_output
+
+    - name: show helm template output for data-api
+      when: app == "dataAPI"
+      debug:
+        msg: "{{ data_api_output.stdout }}"

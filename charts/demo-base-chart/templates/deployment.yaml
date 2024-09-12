@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "service.fullname" . }}
+  labels:
+    app: {{ include "service.fullname" . }}
+    k8s-app: kube-Devops
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "service.fullname" . }}
+  {{- if eq (int .Values.replicas) 1 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  {{- end }}
+  template:
+    metadata:
+      annotations:
+        app.kubernetes.io/version: {{ .Chart.Version }}
+        {{- if .Values.podAnnotations }}
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- end}}
+      labels:
+        app: {{ include "service.fullname" . }}
+        app.kubernetes.io/instance: {{ include "service.fullname" . }}
+        service-name: {{ include "service.fullname" . }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.image.repoKey }}
+{{- if .Values.initContainers }}
+      initContainers:
+        {{- toYaml .Values.initContainers | nindent 8 }}
+{{- end }}
+      securityContext:
+{{- toYaml .Values.podSecurityContext | default "" | nindent 8 }}
+      containers:
+      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        name: {{ include "service.fullname" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+        ports:
+          {{- toYaml .Values.ports | default "" | nindent 12 }}
+
+        env:
+          - name: EXTERNAL_INTEGRATION_KEY
+            value: {{ .Values.externalIntegrationKey }}
+        resources:
+          {{- toYaml .Values.resources | default "" | nindent 12 }}
+      affinity:
+        {{- toYaml .Values.affinity | default "" | nindent 8 }}
+      {{- if .Values.tolerations }}
+      tolerations:
+        {{- toYaml .Values.tolerations | nindent 8 }}
+      {{- end }}

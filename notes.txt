@@ -1,0 +1,28 @@
+Task explain and checklist
+
+- Add a new backend api:
+  - ```/download_external_logs``` makes a call to the external service's api.
+    ==> endpoint added
+
+  - The external download API is dummy api, _you may leave it blank,_ however it requires $EXTERNAL_INTGERATION_KEY to authenticate
+    ==> used dummy endpoint and reading api key from env, which is handled from Deployment
+
+  - the external api has multiple enviroments so the integration key varies by enviroment
+    ==> i used a scenario where i have non-prod and prod, i am seeing the api key during the deployment from ansible.
+
+- Update the health check to fit the new archeticture
+    ==> i did not understand this requirement, what do you mean by "archeticture" here?
+
+- Create helmchart for the stack
+    ==> created a base chart under /chart folder which both apps are using. check /app-deployments where app-specific values vailes exist which can be overridden per app based
+
+- Deployment via Ansible
+    ==> this is done under /ansible-deployer, for demo pourpose, i am using "helm template" which can be repalced with "helm upgrade --install"  for deployment.
+        since one app is using the env var and othere does not, i have made a 2 separate task.
+
+- Monitoring Kubernetes Applications - Demonstrate how to monitor the node and Pod and containers resource utilization
+    ==> kubectl top nodes (for node)
+        kubectl top pods -n <namespace> (for pods/containers)
+
+- How to display only resource utilization for Pods with specific label (k8s-app=kube-Devops)
+    ==> kubectl top pods --selector=k8s-app=kube-Devops

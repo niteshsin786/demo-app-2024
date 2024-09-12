@@ -1,0 +1,30 @@
+image:
+  repository: ""
+  tag: ""
+  pullPolicy: "Always"
+  repoKey: myregistrykey
+
+nameOverride: ""
+fullnameOverride: ""
+
+replicas: 1
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+ports: []
+
+resources: {}
+
+affinity: {}
+tolerations: []
+
+
+service:
+  ports:
+    - name: http
+      port: 5000
+      protocol: TCP
+      targetPort: 5000
+  type: ClusterIP
